@@ -367,7 +367,7 @@ public class ServerMvcIntegrationTests {
 		formData.add("baz", "bam");
 
 		// @formatter:off
-		restClient.post().uri("/post").header("test", "form").contentType(FORM_URL_ENCODED_CONTENT_TYPE)
+		restClient.post().uri("/post?foo=fooquery").header("test", "formurlencoded").contentType(FORM_URL_ENCODED_CONTENT_TYPE)
 				.bodyValue(formData)
 				.exchange()
 				.expectStatus().isOk()
@@ -842,6 +842,17 @@ public class ServerMvcIntegrationTests {
 					.before(new LocalServerPortUriResolver())
 					.filter(prefixPath("/test"))
 					.filter(addRequestHeader("X-Test", "form"))
+					.build();
+			// @formatter:on
+		}
+
+		@Bean
+		public RouterFunction<ServerResponse> gatewayRouterFunctionsFormUrlEncoded() {
+			// @formatter:off
+			return route("testform")
+					.POST("/post", header("test", "formurlencoded"), http())
+					.before(new HttpbinUriResolver())
+					.filter(addRequestHeader("X-Test", "formurlencoded"))
 					.build();
 			// @formatter:on
 		}
